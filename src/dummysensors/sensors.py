@@ -1,14 +1,24 @@
+from __future__ import annotations
 import random, math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class TemperatureSensor:
-    def __init__(self, min_val=15, max_val=30, noise=0.5):
-        self.min_val = min_val
-        self.max_val = max_val
-        self.noise = noise
+    type: str = field(default="temp", init=False)
+    min_val: float = 15.0
+    max_val: float = 30.0
+    noise: float = 0.5
+    period_s: float = 24 * 3600
 
-    def read(self):
+    def __post_init__(self):
+        # change if min > max
+        if self.min_val > self.max_val:
+            self.min_val, self.max_val = self.max_val, self.min_val
+        # noise always positive
+        if self.noise < 0:
+            self.noise = abs(self.noise)
+
+    def read(self, t_s: float | None = None) -> float:
         base = random.uniform(self.min_val, self.max_val)
         return base + random.gauss(0, self.noise)
 
