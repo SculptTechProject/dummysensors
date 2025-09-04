@@ -48,6 +48,9 @@ dummy-sensors run \
   --out "*=stdout"
 ```
 
+>👉 Check out a full demo with live plotting and JSONL logging here:  
+[dummysensors demo (ds-test)](https://github.com/SculptTechProject/ds-test)
+
 Each record is a JSON line:
 
 ```json
@@ -146,6 +149,10 @@ Pull Requests welcome. Guidelines:
 - Simple sensor classes
 - No heavy runtime dependencies
 - Test each public feature
+
+## Example Demo
+
+- A complete example using `dummysensors` for live plotting and JSONL logging is available in the [ds-test repository](https://github.com/SculptTechProject/ds-test).
 
 ## Roadmap
 
