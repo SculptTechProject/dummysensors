@@ -1,6 +1,0 @@
-ts_ms,device_id,sensor_id,type,value
-0,engine-A,vibration-0,vibration,0.09920709782168856
-500,engine-A,vibration-0,vibration,0.24727765238362118
-1000,engine-A,vibration-0,vibration,0.10491826983174454
-1500,engine-A,vibration-0,vibration,0.15830367289446529
-2000,engine-A,vibration-0,vibration,0.20296206525424756

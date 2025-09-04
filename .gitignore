@@ -6,6 +6,9 @@ __pycache__/
 # config.sensors.yaml
 config.sensors.yaml
 
+# out file
+out
+
 # Visual Studio code
 .vscode/
 
