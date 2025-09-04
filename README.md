@@ -1,7 +1,7 @@
 # dummysensors
 
 [![PyPI version](https://img.shields.io/pypi/v/dummysensors.svg)](https://pypi.org/project/dummysensors/)
-[![CI](https://github.com/Dalke-dev/dummysensors/actions/workflows/ci.yml/badge.svg)](https://github.com/Dalke-dev/dummysensors/.github/workflows/ci.yml)
+[![CI](https://github.com/Dalke-dev/dummysensors/actions/workflows/ci.yml/badge.svg)](https://github.com/SculptTechProject/dummysensors/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A lightweight generator of dummy sensor data for IoT and ML testing.
@@ -51,7 +51,13 @@ dummy-sensors run \
 Each record is a JSON line:
 
 ```json
-{"ts_ms": 1234, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 21.04}
+{
+  "ts_ms": 1234,
+  "device_id": "engine-A",
+  "sensor_id": "temp-0",
+  "type": "temp",
+  "value": 21.04
+}
 ```
 
 ## `--spec` format
@@ -64,8 +70,8 @@ device=<ID>: <type>*<count>[, <type>*<count> ...] ; device=<ID2>: ...
 
 Examples:
 
-* `device=A: temp*3` — device A with three temperature sensors
-* `device=eng: temp*1,vibration*2; device=room: temp*2`
+- `device=A: temp*3` — device A with three temperature sensors
+- `device=eng: temp*1,vibration*2; device=room: temp*2`
 
 > As of `v0.2`, supported sensor types: `temp`, `vibration`. More sensors and YAML configs coming soon.
 
@@ -73,26 +79,26 @@ Examples:
 
 ### `TemperatureSensor`
 
-* Parameters: `min_val=15.0`, `max_val=30.0`, `noise=0.5`, `period_s=86400`
-* Methods:
-  * `read(t_s: float | None = None) -> float` — one sample (random within range + Gaussian noise)
+- Parameters: `min_val=15.0`, `max_val=30.0`, `noise=0.5`, `period_s=86400`
+- Methods:
+  - `read(t_s: float | None = None) -> float` — one sample (random within range + Gaussian noise)
 
 ### `VibrationSensor`
 
-* Parameters: `base_hz=50.0`, `amp=1.0`, `noise=0.1`, `spike_prob=0.0`
-* Methods:
-  * `read(t_s: float | None = None) -> float` — sinusoidal signal at `base_hz` + noise
+- Parameters: `base_hz=50.0`, `amp=1.0`, `noise=0.1`, `spike_prob=0.0`
+- Methods:
+  - `read(t_s: float | None = None) -> float` — sinusoidal signal at `base_hz` + noise
 
 ### Sensor Registry
 
-* `dummysensors.registry.SENSOR_REGISTRY` — maps string `kind` → class
-* `dummysensors.registry.make_sensor(kind: str, **params)`
+- `dummysensors.registry.SENSOR_REGISTRY` — maps string `kind` → class
+- `dummysensors.registry.make_sensor(kind: str, **params)`
 
 ### Orchestrator
 
-* `dummysensors.orchestrator.run_stream(spec_str, rate_hz, duration_s, total_count, writer_for_type)`
-  * Creates instances based on `spec_str`, emits samples at `rate_hz`.
-  * `writer_for_type` is a dict `type → callable(sample_dict)`. `*` = default writer.
+- `dummysensors.orchestrator.run_stream(spec_str, rate_hz, duration_s, total_count, writer_for_type)`
+  - Creates instances based on `spec_str`, emits samples at `rate_hz`.
+  - `writer_for_type` is a dict `type → callable(sample_dict)`. `*` = default writer.
 
 ## Output Format
 
@@ -131,34 +137,34 @@ head -n 3 demo_out/vibration.jsonl
 
 ## Development
 
-* Project layout: **src-layout**
-* Tests: `pytest -q`
-* Lint/format: `ruff check src tests` and `ruff format`
+- Project layout: **src-layout**
+- Tests: `pytest -q`
+- Lint/format: `ruff check src tests` and `ruff format`
 
 Pull Requests welcome. Guidelines:
 
-* Simple sensor classes
-* No heavy runtime dependencies
-* Test each public feature
+- Simple sensor classes
+- No heavy runtime dependencies
+- Test each public feature
 
 ## Roadmap
 
-* `v0.2`
-  * CSV writer
-  * `partition_by=device`
-  * YAML config (`--config config.yaml`)
-* `v0.3`
-  * AnomalyInjector (spike, dropout, drift)
-  * New sensors: `humidity`, `rpm`, `battery_voltage`, `gps (trajectory)`, `accel 3-axis`
-* `v0.4`
-  * Outputs: Kafka, Redis Stream
-  * Live preview (WebSocket demo)
+- `v0.2`
+  - CSV writer
+  - `partition_by=device`
+  - YAML config (`--config config.yaml`)
+- `v0.3`
+  - AnomalyInjector (spike, dropout, drift)
+  - New sensors: `humidity`, `rpm`, `battery_voltage`, `gps (trajectory)`, `accel 3-axis`
+- `v0.4`
+  - Outputs: Kafka, Redis Stream
+  - Live preview (WebSocket demo)
 
 ## Versioning and Publishing
 
-* Semantic versioning with tags `vX.Y.Z`.
-* ​**CI**​: `.github/workflows/ci.yml` (lint + tests + build).
-* ​**Publish**​: `.github/workflows/publish.yml` (Trusted Publishing to PyPI on release).
+- Semantic versioning with tags `vX.Y.Z`.
+- ​**CI**​: `.github/workflows/ci.yml` (lint + tests + build).
+- ​**Publish**​: `.github/workflows/publish.yml` (Trusted Publishing to PyPI on release).
 
 ## License
 
