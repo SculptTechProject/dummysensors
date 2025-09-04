@@ -1,7 +1,7 @@
 # dummysensors
 
 [![PyPI version](https://img.shields.io/pypi/v/dummysensors.svg)](https://pypi.org/project/dummysensors/)
-[![CI](https://github.com/Dalke-dev/dummysensors/actions/workflows/ci.yml/badge.svg)](https://github.com/SculptTechProject/dummysensors/actions/workflows/ci.yml)
+[![CI](https://github.com/SculptTechProject/dummysensors/actions/workflows/ci.yml/badge.svg)](https://github.com/SculptTechProject/dummysensors/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A lightweight generator of dummy sensor data for IoT and ML testing.
@@ -169,4 +169,3 @@ Pull Requests welcome. Guidelines:
 ## License
 
 MIT © Mateusz Dalke
-
