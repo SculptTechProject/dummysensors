@@ -9,10 +9,10 @@ Provides a simple Python API and CLI, supports running multiple sensors in paral
 
 ## Installation
 
+From PyPI (recommended):
+
 ```bash
-pip install -e .
-# for development:
-pip install -r requirements.txt
+pip install dummysensors
 ```
 
 ## Quick Start (API)
@@ -27,6 +27,34 @@ vib  = VibrationSensor(base_hz=50.0, amp=1.0, noise=0.05)
 print(temp.read())            # e.g. 21.3
 print(vib.read(t_s=0.123))    # sinusoidal signal with noise
 ```
+
+## Config file
+
+Instead of passing long `--spec` strings, you can define your setup in a YAML file.  
+By default, `dummy-sensors run --config config.sensors.yaml` will look for a file named `config.sensors.yaml` in the current directory.
+
+### Example `config.sensors.yaml`
+
+```yaml
+rate: 2
+count: 5
+partition_by: type
+
+outputs:
+  - type: jsonl
+    for: temp
+    path: out/temp.jsonl
+  - type: csv
+    for: vibration
+    path: out/vibration.csv
+
+devices:
+  - id: engine-A
+    sensors:
+      - kind: temp
+        count: 1
+      - kind: vibration
+        count: 1
 
 ## Quick Start (CLI)
 
@@ -76,7 +104,8 @@ Examples:
 - `device=A: temp*3` — device A with three temperature sensors
 - `device=eng: temp*1,vibration*2; device=room: temp*2`
 
-> As of `v0.2`, supported sensor types: `temp`, `vibration`. More sensors and YAML configs coming soon.
+> As of `v0.2`, supported sensor types: `temp`, `vibration`.  
+> You can define setups either with `--spec` (quick inline config) or using a YAML file (`--config config.sensors.yaml`) for more complex scenarios.
 
 ## Python API
 
@@ -117,7 +146,7 @@ JSON Lines (one record per line):
 }
 ```
 
-Planned: CSV, Kafka, Redis Stream, WebSocket.
+> Planned: CSV, Kafka, Redis Stream, WebSocket.
 
 ## Makefile
 
@@ -140,6 +169,13 @@ head -n 3 demo_out/vibration.jsonl
 
 ## Development
 
+```bash
+git clone https://github.com/SculptTechProject/dummysensors
+cd dummysensors
+pip install -e .
+pip install -r requirements.txt
+```
+
 - Project layout: **src-layout**
 - Tests: `pytest -q`
 - Lint/format: `ruff check src tests` and `ruff format`
@@ -156,7 +192,7 @@ Pull Requests welcome. Guidelines:
 
 ## Roadmap
 
-- `v0.2`
+- `v0.2` ✅
   - CSV writer
   - `partition_by=device`
   - YAML config (`--config config.yaml`)
