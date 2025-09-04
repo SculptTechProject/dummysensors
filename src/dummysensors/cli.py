@@ -1,5 +1,8 @@
 from __future__ import annotations
-import argparse, json, time, sys, csv
+import argparse
+import sys
+import time
+import json
 from .sensors import TemperatureSensor
 from .orchestrator import run_stream
 import os

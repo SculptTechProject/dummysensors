@@ -2,7 +2,9 @@ from __future__ import annotations
 from typing import Callable
 from .registry import make_sensor
 from .spec import parse_spec
-import time, json, sys
+import time
+import json
+import sys
 
 def run_stream(
     spec_str: str,
