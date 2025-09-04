@@ -1,5 +1,6 @@
 from __future__ import annotations
-import random, math
+import random
+import math
 from dataclasses import dataclass, field
 
 @dataclass
