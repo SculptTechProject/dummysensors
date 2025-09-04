@@ -1,3 +1,3 @@
-from .sensors import TemperatureSensor
-__all__ = ["TemperatureSensor"]
-__version__ = "0.1.0"
+from .sensors import TemperatureSensor, VibrationSensor
+__all__ = ["TemperatureSensor", "VibrationSensor"]
+__version__ = "0.1.1"
