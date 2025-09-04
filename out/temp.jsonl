@@ -1,0 +1,5 @@
+{"ts_ms": 0, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 24.643698021231547}
+{"ts_ms": 500, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 23.70217328027316}
+{"ts_ms": 1000, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 21.464851782876178}
+{"ts_ms": 1500, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 26.817176898799882}
+{"ts_ms": 2000, "device_id": "engine-A", "sensor_id": "temp-0", "type": "temp", "value": 17.562920097753118}

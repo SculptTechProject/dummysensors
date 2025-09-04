@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# config.sensors.yaml
+config.sensors.yaml
+
 # Visual Studio code
 .vscode/
 
