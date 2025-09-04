@@ -19,5 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic test suite (pytest)
 - CI/CD GitHub Actions (tests + lint + build + publish via Trusted Publishing)
 
-[0.1.0]: https://github.com/SculptTechProject/dummysensors/releases/tag/v0.1.0
 
+## [0.2.0]https://github.com/SculptTechProject/dummysensors/releases/tag/v0.2.0 - 2025-09-04
+
+### Added
+
+- CSV writer (`--out "*.csv"`) z nagłówkiem i line-buffering.
+- `--partition-by device|type|none` (routing do plików per device/type).
+- YAML config: `dummy-sensors run --config config.yaml`.
+- Autodiscovery configu: `config.sensors.yaml` (preferowane), plus `dummysensors.yaml|yml`, `config.yaml|yml`.
+- Testy: config discovery, CSV writer.
+
+### Changed
+
+- `publish.yml` stabilizowany pod Trusted Publishing.
+
+
+[0.2.0]: https://github.com/SculptTechProject/dummysensors/releases/tag/v0.2.0
+[0.1.0]: https://github.com/SculptTechProject/dummysensors/releases/tag/v0.1.0

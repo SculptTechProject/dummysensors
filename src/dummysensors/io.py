@@ -3,7 +3,6 @@ import json
 import csv
 import sys
 from typing import Callable
-from typing import Iterable
 
 def _ensure_dir(path: str) -> None:
     d = os.path.dirname(path)
