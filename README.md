@@ -131,49 +131,157 @@ Examples:
 
 ## Python API
 
+Below is the up‑to‑date API that matches the code. All times are in seconds; pass monotonic time to `t_s` for stable integration. If `t_s=None`, sensors start from 0.
+
 ### `TemperatureSensor`
 
-* Parameters: `min_val=15.0`, `max_val=30.0`, `noise=0.5`, `period_s=86400`
-* Methods: `read(t_s: float | None = None) -> float`
+Daily temperature: sine wave + OU noise.
+
+**Parameters (defaults):**
+
+* `min_val: float = 15.0`
+* `max_val: float = 30.0`
+* `period_s: float = 24*3600`
+* `phase_shift: float = -4*3600` — shift so the maximum is in the evening
+* `noise_theta: float = 0.05` — mean‑reversion strength in OU
+* `noise_sigma: float = 0.3` — OU noise scale
+
+**Methods:**
+
+* `read(t_s: float | None = None) -> float` — temperature in °C
+
+---
 
 ### `VibrationSensor`
 
-* Parameters: `base_hz=50.0`, `amp=1.0`, `noise=0.1`, `spike_prob=0.0`
-* Methods: `read(t_s: float | None = None) -> float`
+Base sine at `base_hz` + OU noise + rare spikes.
+
+**Parameters (defaults):**
+
+* `base_hz: float = 50.0`
+* `amp: float = 1.0`
+* `noise_theta: float = 2.0`
+* `noise_sigma: float = 0.05`
+* `spike_prob: float = 0.001` — spike probability per sample
+* `spike_scale: float = 4.0` — spike magnitude (× `amp`)
+
+**Methods:**
+
+* `read(t_s: float | None = None) -> float`
+
+---
 
 ### `IrradianceSensor`
 
-* Simulates solar irradiance with day/night cycle.
-* Parameters: `peak`, `day_period_s`, `sunrise`, `sunset`
+Solar irradiance (W/m²): half‑sine between sunrise and sunset + slow OU “clouds”.
+
+**Parameters (defaults):**
+
+* `peak: float = 900.0` — peak W/m²
+* `day_period_s: float = 24*3600`
+* `sunrise: float = 6*3600`
+* `sunset: float = 18*3600`
+* `cloud_theta: float = 1/600.0` — slow cloud dynamics
+* `cloud_sigma: float = 0.05`
+
+**Methods:**
+
+* `read(t_s: float | None = None) -> float` — W/m² (>= 0)
+
+Note: the cloud factor is clamped to 0.2–1.2.
+
+---
 
 ### `PVPowerSensor`
 
-* Converts irradiance into PV output.
-* Parameters: `stc_kw`, `inverter_eff`, `p_kw_max`
+Inverter AC power (kW). Model:
+`P_dc ≈ (irradiance/1000) * stc_kw`,
+`P_ac = min(p_kw_max, max(0, P_dc * inverter_eff)) + N(0, noise_sigma)`
+
+**Parameters (defaults):**
+
+* `stc_kw: float = 5.0` — STC power at 1000 W/m²
+* `inverter_eff: float = 0.95`
+* `p_kw_max: float = 4.8`
+* `noise_sigma: float = 0.05`
+
+**Methods:**
+
+* `read(t_s: float | None = None, irradiance: float | None = None) -> float`
+
+  * Returns `0.0` if `irradiance is None`.
+
+---
 
 ### `LoadSensor`
 
-* Simulates household/plant consumption profile.
-* Parameters: `base_kw`, `morning_kw`, `evening_kw`, `day_period_s`
+Consumption (kW): base + two daily “bumps” (morning & evening) + OU.
+
+**Parameters (defaults):**
+
+* `base_kw: float = 0.5`
+* `morning_kw: float = 0.8`
+* `evening_kw: float = 1.2`
+* `day_period_s: float = 24*3600`
+* `noise_theta: float = 1/120.0`
+* `noise_sigma: float = 0.05`
+
+**Methods:**
+
+* `read(t_s: float | None = None) -> float` — kW (>= 0)
+
+---
 
 ### `BatterySoCSensor`
 
-* Integrates charge/discharge depending on PV vs load.
-* Parameters: `capacity_kwh`, `soc0`
+State‑of‑charge simulator (%), integrating the power balance. Sign convention: positive `net_power_kw` means an energy deficit → discharge; negative means surplus → charge. Power limits and efficiencies are respected.
+
+**Parameters (defaults):**
+
+* `capacity_kwh: float = 10.0`
+* `soc0: float = 50.0` — initial SoC \[%]
+* `charge_eff: float = 0.95`
+* `discharge_eff: float = 0.95`
+* `p_charge_max_kw: float = 3.0`
+* `p_discharge_max_kw: float = 3.0`
+
+**Methods:**
+
+* `step(t_s: float, net_power_kw: float) -> float` — returns current SoC \[%]
+
+> Note: this is **not** a `read()`. Call `step(...)` each tick with the power balance.
+
+---
+
+### Sensor dependencies
+
+* `PVPowerSensor` needs `irradiance` (e.g., from `IrradianceSensor`).
+* `BatterySoCSensor` needs `net_power_kw = load_kw - pv_kw` (or a general balance).
+  Positive → discharge, negative → charge.
+
+---
 
 ### Sensor Registry
 
 * `dummysensors.registry.SENSOR_REGISTRY` — maps string `kind` → class
-* `dummysensors.registry.make_sensor(kind: str, **params)`
+* `dummysensors.registry.make_sensor(kind: str, **params)` — construct by name
+
+---
 
 ### Orchestrator
 
-* `dummysensors.orchestrator.run_stream(...)`
+`dummysensors.orchestrator.run_stream(...)`
 
-  * Creates instances based on `spec_str` or `config`, respects **priority** and **per-sensor rate\_hz**.
-  * `writer_for_type` is a dict `type → callable(sample_dict)`. `*` = default writer.
+* Builds instances from a `spec_str` or a `config`.
+* Respects sensor **priority** and per‑sensor `rate_hz`.
+* `writer_for_type` is a map `type → callable(sample_dict)`, with `"*"` as the default writer.
 
 ---
+
+### Implementation notes
+
+* **OU (Ornstein–Uhlenbeck)** uses `dt` from successive calls; a tiny minimum `dt` is applied when time does not advance.
+* Prefer passing monotonic time to `t_s` (e.g., `time.monotonic()`), especially when chaining sensors in a pipeline.
 
 ## Output Format
 
