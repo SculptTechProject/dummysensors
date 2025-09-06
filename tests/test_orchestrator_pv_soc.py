@@ -8,7 +8,7 @@ def _writers(capture: Capture):
 
 def test_pv_pipeline_day_night_like_behaviour():
     """
-    Mini-day: day_period_s=2s, sunrise=0.0, sunset=2.0, so ~1.0s is 'noon'.
+    Mini-day: day_period_s=2s, sunrise=0.5, sunset=1.5, so ~1.0s is 'noon'.
     Expect pv_power to become > 0 when irradiance > 0.
     """
     cap = Capture()
