@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Callable, Dict
+from typing import Callable
+from typing import Dict
+from typing import Any
 from .orchestrator import run_stream
 from .io import jsonl_writer
 from .io import csv_writer
@@ -28,8 +30,7 @@ def _writer_for_decl(decl: dict):
         if not path:
             raise ValueError("CSV output requires 'path' in config.")
         return csv_writer(str(path))
-    # default jsonl; if path is None -> stdout
-    return jsonl_writer(path)
+    return jsonl_writer(path)  # stdout if path is None
 
 def run_from_config(path: str) -> None:
     try:
@@ -43,34 +44,33 @@ def run_from_config(path: str) -> None:
     rate = float(cfg.get("rate", 5))
     duration = cfg.get("duration")
     count = cfg.get("count")
+    partition_by = cfg.get("partition_by", "none")
 
-    # outputs
+    # writers
     writers: Dict[str, Callable[[dict], None]] = {}
     for out in cfg.get("outputs", []):
         k = out.get("for", "*")
         writers[k] = _writer_for_decl(out)
 
-    # partitioning
-    partition_by = cfg.get("partition_by", "none")
+    # pass full devices tree (with params/priority/rate_hz)
+    devices_cfg: list[dict[str, Any]] = cfg.get("devices", [])
 
-    # build spec_str z drzewa devices
-    # devices: [{id: "engine-A", sensors: [{kind:"temp", count:2}, ...]}, ...]
+    # for backward compatibility we still build a spec_str
     parts = []
-    for dev in cfg.get("devices", []):
+    for dev in devices_cfg:
         sid = dev["id"]
         items = []
         for s in dev.get("sensors", []):
-            kind = s["kind"]
-            cnt = int(s.get("count", 1))
-            items.append(f"{kind}*{cnt}")
+            items.append(f"{s['kind']}*{int(s.get('count', 1))}")
         parts.append(f"device={sid}: " + ",".join(items))
     spec_str = "; ".join(parts)
 
     run_stream(
-        spec_str,
+        spec_str=spec_str,
         rate_hz=rate,
         duration_s=duration,
         total_count=count,
         writer_for_type=writers,
         partition_by=partition_by,
+        devices_cfg=devices_cfg,
     )
