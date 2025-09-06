@@ -3,7 +3,6 @@ import math
 from dummysensors import VibrationSensor
 
 def test_vibration_basic():
-    import math
     amp = 1.0
     vib = VibrationSensor(
         base_hz=8.0,
