@@ -1,5 +1,12 @@
 from typing import Callable, Any
-from .sensors import BatterySoCSensor, IrradianceSensor, LoadSensor, PVPowerSensor, TemperatureSensor, VibrationSensor
+from .sensors import (
+    BatterySoCSensor,
+    IrradianceSensor,
+    LoadSensor,
+    PVPowerSensor,
+    TemperatureSensor,
+    VibrationSensor,
+)
 
 SENSOR_REGISTRY: dict[str, Callable[..., Any]] = {
     "temp": TemperatureSensor,
@@ -9,6 +16,7 @@ SENSOR_REGISTRY: dict[str, Callable[..., Any]] = {
     "load": LoadSensor,
     "soc": BatterySoCSensor,
 }
+
 
 def make_sensor(kind: str, **params):
     cls = SENSOR_REGISTRY.get(kind)

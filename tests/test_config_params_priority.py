@@ -39,6 +39,7 @@ devices:
         rate_hz: 5
 """
 
+
 def test_run_from_config_with_params_priority_and_rate(tmp_path: Path, monkeypatch):
     cfg = tmp_path / "config.sensors.yaml"
     cfg.write_text(YAML.strip(), encoding="utf-8")
