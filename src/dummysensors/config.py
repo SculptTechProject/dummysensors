@@ -14,6 +14,7 @@ DEFAULT_CONFIG_CANDIDATES = (
     "dummysensors.yml",
 )
 
+
 def find_config_path(start: str | None = None) -> str | None:
     """Return first matching config file path from DEFAULT_CONFIG_CANDIDATES in `start` or CWD."""
     base = Path(start) if start else Path.cwd()
@@ -23,6 +24,7 @@ def find_config_path(start: str | None = None) -> str | None:
             return str(cand)
     return None
 
+
 def _writer_for_decl(decl: dict):
     fmt = str(decl.get("type", "jsonl")).lower()
     path = decl.get("path")
@@ -31,6 +33,7 @@ def _writer_for_decl(decl: dict):
             raise ValueError("CSV output requires 'path' in config.")
         return csv_writer(str(path))
     return jsonl_writer(path)  # stdout if path is None
+
 
 def run_from_config(path: str) -> None:
     try:
