@@ -5,14 +5,18 @@ from .sensors import TemperatureSensor
 from .orchestrator import run_stream
 from .io import jsonl_writer, csv_writer
 
+
 def _stdout_writer():
     return jsonl_writer(None)
+
 
 def _jsonl_file_writer(path: str):
     return jsonl_writer(path)
 
+
 def _csv_file_writer(path: str):
     return csv_writer(path)
+
 
 def _make_writer_map(out_args: list[str] | None):
     mapping = {}
@@ -25,8 +29,13 @@ def _make_writer_map(out_args: list[str] | None):
         if dest == "stdout":
             mapping[key] = _stdout_writer()
         else:
-            mapping[key] = _csv_file_writer(dest) if dest.lower().endswith(".csv") else _jsonl_file_writer(dest)
+            mapping[key] = (
+                _csv_file_writer(dest)
+                if dest.lower().endswith(".csv")
+                else _jsonl_file_writer(dest)
+            )
     return mapping
+
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="dummy-sensors")
@@ -39,7 +48,12 @@ def main(argv=None):
     gen.add_argument("--min", dest="min_val", type=float, default=15.0)
     gen.add_argument("--max", dest="max_val", type=float, default=30.0)
     # Back-compat: this is mapped to either `noise` or `noise_sigma`
-    gen.add_argument("--noise", type=float, default=0.5, help="noise level (mapped to `noise` or `noise_sigma`)")  
+    gen.add_argument(
+        "--noise",
+        type=float,
+        default=0.5,
+        help="noise level (mapped to `noise` or `noise_sigma`)",
+    )
     gen.add_argument("--jsonl", type=str, default=None)
 
     run = sub.add_parser("run", help="multi-device/multi-sensor run via spec or config")
@@ -47,9 +61,18 @@ def main(argv=None):
     run.add_argument("--duration", type=float, default=None)
     run.add_argument("--count", type=int, default=None)
     run.add_argument("--spec", type=str, help='e.g. "device=A: temp*2,vibration*1"')
-    run.add_argument("--out", action="append", help='mapping like "temp=out/temp.jsonl", "*=stdout"', default=None)
-    run.add_argument("--partition-by", choices=["none", "type", "device"], default="none")
-    run.add_argument("--config", type=str, help="YAML config path (overrides --spec/--out)")
+    run.add_argument(
+        "--out",
+        action="append",
+        help='mapping like "temp=out/temp.jsonl", "*=stdout"',
+        default=None,
+    )
+    run.add_argument(
+        "--partition-by", choices=["none", "type", "device"], default="none"
+    )
+    run.add_argument(
+        "--config", type=str, help="YAML config path (overrides --spec/--out)"
+    )
 
     args = p.parse_args(argv)
 
@@ -59,7 +82,9 @@ def main(argv=None):
         # ------- Backward-compatible TemperatureSensor args -------
         # If the class exposes `noise`, use it; otherwise map to `noise_sigma`.
         try:
-            fields = getattr(TemperatureSensor, "__dataclass_fields__", {})  # dataclass-friendly
+            fields = getattr(
+                TemperatureSensor, "__dataclass_fields__", {}
+            )  # dataclass-friendly
         except Exception:
             fields = {}
 
@@ -78,13 +103,15 @@ def main(argv=None):
         for i in range(total):
             t_s = time.perf_counter() - t0
             val = s.read()
-            writer({
-                "ts_ms": int(t_s * 1000),
-                "device_id": "dev-0",
-                "sensor_id": "temp-0",
-                "type": "temp",
-                "value": float(val),
-            })
+            writer(
+                {
+                    "ts_ms": int(t_s * 1000),
+                    "device_id": "dev-0",
+                    "sensor_id": "temp-0",
+                    "type": "temp",
+                    "value": float(val),
+                }
+            )
             if period > 0:
                 t_next = t0 + (i + 1) * period
                 while time.perf_counter() < t_next:
@@ -94,6 +121,7 @@ def main(argv=None):
     # config-first flow for `run`
     if args.config:
         from .config import run_from_config
+
         run_from_config(args.config)
         return
 
