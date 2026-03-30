@@ -13,10 +13,12 @@ import sys
 # default priorities if not given
 _DEFAULT_PRIORITY = {"irradiance": 0, "pv_power": 1, "load": 2, "soc": 3}
 
+
 def _sensor_priority(kind: str, override: int | None) -> int:
     if override is not None:
         return int(override)
     return _DEFAULT_PRIORITY.get(kind, 10)
+
 
 def run_stream(
     spec_str: str,
@@ -93,7 +95,11 @@ def run_stream(
 
     # 3) Main loop
     t0 = time.perf_counter()
-    n = total_count if total_count is not None else int(max(0.0, (duration_s or 0)) * rate_hz)
+    n = (
+        total_count
+        if total_count is not None
+        else int(max(0.0, (duration_s or 0)) * rate_hz)
+    )
 
     # per-sensor next due time (for per-sensor rate)
     next_due: Dict[Tuple[str, str], float] = {}  # (dev, sid) -> abs time
@@ -120,14 +126,14 @@ def run_stream(
             # dependency-aware branches
             if kind == "pv_power":
                 irr = ctx.get("irradiance", 0.0)
-                val = sensor.read(t_s, irradiance=irr) # type: ignore[attr-defined]
+                val = sensor.read(t_s, irradiance=irr)  # type: ignore[attr-defined]
             elif kind == "soc":
                 load = ctx.get("load", 0.0)
-                pv   = ctx.get("pv_power", 0.0)
+                pv = ctx.get("pv_power", 0.0)
                 net = load - pv
-                val = sensor.step(t_s, net) # type: ignore[attr-defined]
+                val = sensor.step(t_s, net)  # type: ignore[attr-defined]
             else:
-                val = sensor.read(t_s) # type: ignore[attr-defined]
+                val = sensor.read(t_s)  # type: ignore[attr-defined]
 
             ctx[kind] = float(val)
 
