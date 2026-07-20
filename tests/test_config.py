@@ -4,6 +4,7 @@ import os
 
 from dummysensors.config import run_from_config
 
+
 def test_config_yaml_creates_outputs(tmp_path):
     # prepare config
     cfg_path = tmp_path / "config.example.yaml"
@@ -54,5 +55,5 @@ devices:
     # check CSV
     with open(vib_file, newline="", encoding="utf-8") as f:
         reader = list(csv.reader(f))
-    assert reader[0] == ["ts_ms","device_id","sensor_id","type","value"]
+    assert reader[0] == ["ts_ms", "device_id", "sensor_id", "type", "value"]
     assert len(reader) > 1
