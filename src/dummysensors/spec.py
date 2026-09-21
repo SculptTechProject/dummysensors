@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List
+
 
 @dataclass
 class SensorSpec:
@@ -8,10 +10,12 @@ class SensorSpec:
     count: int
     params: dict
 
+
 @dataclass
 class DeviceSpec:
     id: str
     sensors: List[SensorSpec]
+
 
 def parse_spec(spec: str) -> list[DeviceSpec]:
     devices: list[DeviceSpec] = []
@@ -26,7 +30,9 @@ def parse_spec(spec: str) -> list[DeviceSpec]:
                 continue
             if "*" in item:
                 kind, count = item.split("*", 1)
-                sensor_specs.append(SensorSpec(kind=kind.strip(), count=int(count), params={}))
+                sensor_specs.append(
+                    SensorSpec(kind=kind.strip(), count=int(count), params={})
+                )
             else:
                 sensor_specs.append(SensorSpec(kind=item, count=1, params={}))
         devices.append(DeviceSpec(id=dev_id, sensors=sensor_specs))
