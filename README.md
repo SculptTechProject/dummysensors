@@ -26,10 +26,10 @@ from dummysensors import TemperatureSensor, VibrationSensor
 
 # create sensors
 temp = TemperatureSensor(min_val=18, max_val=24, noise=0.2)
-vib  = VibrationSensor(base_hz=50.0, amp=1.0, noise=0.05)
+vib = VibrationSensor(base_hz=50.0, amp=1.0, noise=0.05)
 
-print(temp.read())            # e.g. 21.3
-print(vib.read(t_s=0.123))    # sinusoidal signal with noise
+print(temp.read())  # e.g. 21.3
+print(vib.read(t_s=0.123))  # sinusoidal signal with noise
 ```
 
 ---
